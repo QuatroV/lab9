@@ -1,0 +1,20 @@
+<h1>Вывод значений</h1>
+
+<% if @error then%>
+    <p><%=@error%></p>
+<% else %>
+    <p style="font-weigth:bold"> Вычисление квадратного корня <%=@a%> </p>
+    <p> Промежуточные результаты: </p>
+    <table>
+    <%i = 1%>
+        <% @x.each do |el| %>
+            <tr>
+            <td><%=i%></td>
+            <td><%=el.round(5)%></td>
+            <%i += 1%>
+            </tr>
+        <%end%>
+    </table>
+    <p>Конечный результат: <%=@x.last.round(5)%><p>
+<%end%>
+<a href="/index/input"> Вернуться назад к вводу </a>

@@ -1,0 +1,53 @@
+<h1>Ввод значений</h1>
+<p>Пожалуйста, введите в форму ниже, квадратный корень какого положительного числa вы хотели бы вычислить:</p>
+<form action = "<%= index_output_url %>" method = "get" id = "first">
+    <input name ="num" type="text" min ="1">
+    <input type="submit" value="Вычислить">
+</form>
+<br>
+<%= form_with url: index_output_url+".json", method: :get, id: "second" do |form| %>
+    <%= form.number_field :num, min: 1%>
+    <input type = "button" value = "Вычислить на этой странице" id = "ajaxsend">
+<% end %>
+<div id="result"></div> 
+
+<script>
+    let out_url = "<%= index_output_url %>" + ".json"
+    const element = document.querySelector("#second #ajaxsend")
+    element.onclick = function(){
+        const param_str = "num=" + document.querySelector("#second #num").value
+        let my_JSON_object = {}
+        let http_request = new XMLHttpRequest()
+        http_request.open("GET",out_url + "?" + param_str)
+        http_request.onreadystatechange = function () {
+            var done = 4, ok = 200;
+            if (http_request.readyState == done && http_request.status == ok) {
+                my_JSON_object = JSON.parse(http_request.responseText);
+                show_result(my_JSON_object);
+            }
+        };
+        http_request.send();
+    }
+    function show_result(data){
+        const err = data.error
+        const value = data.num
+        let result = document.querySelector("#result")
+        result.innerHTML = ""
+        result.insertAdjacentHTML('afterbegin', '<h1>Вывод результатов</h1>')
+        if (err != null){
+            result.insertAdjacentHTML('beforeend', '<p>Ошибка!</p>')
+        }
+        else {
+            create_table(value, result)
+        }
+    }
+    function create_table(data, place){
+        row_amount = data.length
+        place.insertAdjacentHTML('beforeend','<table id = "restable">')
+        table_place = document.querySelector('#restable')
+        for (let i = 0; i < row_amount; ++i){
+            table_place.insertAdjacentHTML('beforeend',`<tr> <td>${i+1}</td> <td>${data[i].toFixed(5)}</td> </tr>`)
+        }
+        place.insertAdjacentHTML('beforeend',`<p>Конечный результат: ${data[row_amount-1].toFixed(5)}</p>`)
+    }
+</script>
